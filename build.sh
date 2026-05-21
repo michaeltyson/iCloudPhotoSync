@@ -70,7 +70,7 @@ cp -R "$SRC_DIR/app/texts" "$STAGE/app/"
 
 echo "==> Fixing line endings..."
 find "$STAGE" \( -name "*.py" -o -name "*.cgi" -o -name "*.sh" -o -name "config" \) \
-    -exec sed -i 's/\r$//' {} +
+    -exec perl -pi -e 's/\r$//' {} +
 
 # ── 2. Create package.tgz ────────────────────────────────────────────────────
 
@@ -303,7 +303,11 @@ cp "$SRC_DIR/PACKAGE_ICON_256.PNG" "$BUILD_DIR/"
 # ── 6. INFO file ─────────────────────────────────────────────────────────────
 
 echo "==> Generating INFO..."
-CHECKSUM=$(md5sum "$BUILD_DIR/package.tgz" | cut -d' ' -f1)
+if command -v md5sum >/dev/null 2>&1; then
+    CHECKSUM=$(md5sum "$BUILD_DIR/package.tgz" | cut -d' ' -f1)
+else
+    CHECKSUM=$(md5 -q "$BUILD_DIR/package.tgz")
+fi
 
 cat > "$BUILD_DIR/INFO" <<INFOEOF
 package="$PKG_NAME"
