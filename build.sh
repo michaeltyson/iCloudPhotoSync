@@ -48,8 +48,13 @@ else
     PIP_CMD=""
 fi
 if [ -n "$PIP_CMD" ]; then
+    rm -rf "$STAGE"/lib/vendor/requests \
+           "$STAGE"/lib/vendor/urllib3 \
+           "$STAGE"/lib/vendor/certifi \
+           "$STAGE"/lib/vendor/charset_normalizer \
+           "$STAGE"/lib/vendor/idna
     $PIP_CMD install --target "$STAGE/lib/vendor" \
-        --no-compile --no-deps \
+        --no-compile --no-deps --no-binary=:all: \
         -r "$SRC_DIR/requirements-pure.txt" \
         2>&1 | sed 's/^/    /'
     rm -rf "$STAGE"/lib/vendor/*.dist-info
